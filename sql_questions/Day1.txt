@@ -39,3 +39,7 @@ from q
 group by team_win
 order by no_of_wins
 
+
+-------------------------------------------------------------------------------------
+youtube : https://youtu.be/MpAMjtvarrc?si=q245DCfZDah6Qh1W
+
