@@ -1,0 +1,41 @@
+create table icc_world_cup
+(
+Team_1 Varchar(20),
+Team_2 Varchar(20),
+Winner Varchar(20)
+);
+INSERT INTO icc_world_cup values('India','SL','India');
+INSERT INTO icc_world_cup values('SL','Aus','Aus');
+INSERT INTO icc_world_cup values('SA','Eng','Eng');
+INSERT INTO icc_world_cup values('Eng','NZ','NZ');
+INSERT INTO icc_world_cup values('Aus','India','India');
+
+select * from icc_world_cup;
+
+youtube link : https://youtu.be/qyAgWL066Vo?si=OPus9LqagqKB1lRf
+
+solution :
+
+
+
+with q as (select
+team_1 as team_win,
+CASE
+	WHEN team_1=winner THEN 1
+	ELSE 0
+END as win_count
+from public.icc_world_cup
+union ALL
+select
+team_2,
+CASE
+	WHEN team_2=winner THEN 1
+	ELSE 0
+END as win_count
+from public.icc_world_cup
+	)
+select team_win,count(1),sum(win_count) as no_of_wins,count(1)-sum(win_count)
+from q
+group by team_win
+order by no_of_wins
+
