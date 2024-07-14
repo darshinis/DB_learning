@@ -1,1 +1,693 @@
-pyspark
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPPP7fKS5e1ygJPFG1ZGSek",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/darshinis/DB_learning/blob/develop/pyspark/day_1.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "wFhol8Dx2f_l"
+      },
+      "outputs": [],
+      "source": [
+        "!apt-get install openjdk-8-jdk-headless -qq > /dev/null\n",
+        "!wget -q http://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz\n",
+        "!tar xf spark-3.5.1-bin-hadoop3.tgz\n",
+        "!pip install -q findspark"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "os.environ[\"JAVA_HOME\"] = \"/usr/lib/jvm/java-8-openjdk-amd64\"\n",
+        "os.environ[\"SPARK_HOME\"] = \"/content/spark-3.5.1-bin-hadoop3\""
+      ],
+      "metadata": {
+        "id": "C-gJtaye2ggQ"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import findspark\n",
+        "findspark.init()\n",
+        "from pyspark.sql import SparkSession\n",
+        "spark = SparkSession.builder.master(\"local[*]\").getOrCreate()\n",
+        "spark.conf.set(\"spark.sql.repl.eagerEval.enabled\", True) # Property used to format output tables better\n",
+        "spark"
+      ],
+      "metadata": {
+        "id": "XjY6Ceeo2iGx"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Downloading and preprocessing Cars Data downloaded origianlly from https://perso.telecom-paristech.fr/eagan/class/igr204/datasets\n",
+        "!wget https://jacobceles.github.io/knowledge_repo/colab_and_pyspark/cars.csv"
+      ],
+      "metadata": {
+        "id": "sx9_oB3z2kRO"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "sc = spark.sparkContext"
+      ],
+      "metadata": {
+        "id": "2hJk0R4h2mN0"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "a = ['apple','banana','sunflower','mango']\n",
+        "rdd = sc.parallelize(a)"
+      ],
+      "metadata": {
+        "id": "AOjP5mxH56pg"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd1 = sc.textFile(\"/content/sample_data/california_housing_train.csv\")"
+      ],
+      "metadata": {
+        "id": "7iL4ST6o6Ghz"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd.getNumPartitions()"
+      ],
+      "metadata": {
+        "id": "mONY8Xqw6Hsb"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df = rdd1.collect()"
+      ],
+      "metadata": {
+        "id": "FABCHFrxJyyq"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "from pyspark.sql.types import StringType"
+      ],
+      "metadata": {
+        "id": "RRPmY2z_Lw6F"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "a = ['apple','banana','sunflower','mango']\n",
+        "rdd = sc.parallelize(a)\n",
+        "df1 = rdd.toDF(StringType())"
+      ],
+      "metadata": {
+        "id": "2ZoGz5QqJure"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df1.show()"
+      ],
+      "metadata": {
+        "id": "OCX_-4EFLTjV"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "b = {'column1':[1,2,3,4,5,6,7,8,9,10],\n",
+        "     'column2':['apple1','apple2','apple3','apple4','banana1','banana2','banana3','banana4','sunflower1','sunflower2']}"
+      ],
+      "metadata": {
+        "id": "jvuGEDGyL6Pt"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd1 = sc.parallelize(b)"
+      ],
+      "metadata": {
+        "id": "pqhi9w-sMSbU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd1.collect()"
+      ],
+      "metadata": {
+        "id": "D30-gh0cMX6B"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df2 = rdd1.toDF(StringType())"
+      ],
+      "metadata": {
+        "id": "RLiZvAn9MZnV"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df2.show()"
+      ],
+      "metadata": {
+        "id": "g8CvDCe5NYjy"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#how to create empty rdd\n",
+        "# step 1: using parallelize\n",
+        "rdd2 = sc.parallelize([])"
+      ],
+      "metadata": {
+        "id": "nGEIK3eZNdx7"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd2.collect()"
+      ],
+      "metadata": {
+        "id": "B8WBI5RrNzl0"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "rdd3 = sc.emptyRDD()"
+      ],
+      "metadata": {
+        "id": "UoMxdOpFN1NH"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "rdd3.collect()"
+      ],
+      "metadata": {
+        "id": "KCd554_iN7J2"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd3.getNumPartitions()"
+      ],
+      "metadata": {
+        "id": "wQZ23TuhN81L"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd.collect()"
+      ],
+      "metadata": {
+        "id": "XzTOPL95OPIv"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "\n",
+        "rdd_u = rdd.map(lambda x : x.upper())"
+      ],
+      "metadata": {
+        "id": "mWhsrpwfOcPo"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd_u.collect()"
+      ],
+      "metadata": {
+        "id": "OJDssFENOjMK"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df3 = spark.read.format(\"csv\")\\\n",
+        "                .option(\"header\",True)\\\n",
+        "                .option(\"delimiter\",\",\")\\\n",
+        "                .load(\"/content/sample_data/california_housing_train.csv\")"
+      ],
+      "metadata": {
+        "id": "LMRxDEdAOkVz"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "df4 = spark.read.csv(\"/content/sample_data/california_housing_train.csv\",header=True,sep=\",\")"
+      ],
+      "metadata": {
+        "id": "r7Opyb3gPLQD"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df3.show(4)"
+      ],
+      "metadata": {
+        "id": "Nq62Yc2PPgdG"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df4.show(4)"
+      ],
+      "metadata": {
+        "id": "q_eKVyarQFM4"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd4 = rdd.map(lambda x : (x,x.upper()))"
+      ],
+      "metadata": {
+        "id": "3e2ZYqXEQJGU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd4.collect()"
+      ],
+      "metadata": {
+        "id": "mM8IC76wGfPX"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "rdd5 = rdd.map(lambda x : (x,1))\n",
+        "rdd5.collect()"
+      ],
+      "metadata": {
+        "id": "C-zSAEcfGg7e"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df = spark.read.format(\"csv\")\\\n",
+        "          .option(\"header\",True)\\\n",
+        "          .option(\"delimiter\",\",\")\\\n",
+        "          .option(\"inferSchema\",True)\\\n",
+        "          .load(\"/content/sample_data/california_housing_train.csv\")"
+      ],
+      "metadata": {
+        "id": "38eSh3tcGst-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.printSchema()"
+      ],
+      "metadata": {
+        "id": "cc1Du6RfU6XM"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.columns"
+      ],
+      "metadata": {
+        "id": "kivGobejVAEl"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.tail(5) # tail result will be list of ROW()"
+      ],
+      "metadata": {
+        "id": "NFuk_0t_VKH-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.head(5)"
+      ],
+      "metadata": {
+        "id": "2kzewzc_VMXj"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.describe()"
+      ],
+      "metadata": {
+        "id": "IqUCnl6RVUk3"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.show(5,False)"
+      ],
+      "metadata": {
+        "id": "NmptXTmVVWeq"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.show(1)"
+      ],
+      "metadata": {
+        "id": "TYhghA4WVgCb"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.select(\"*\").show(2)"
+      ],
+      "metadata": {
+        "id": "QA3r8rH_Vo6z"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.select(\"latitude\").show(2)"
+      ],
+      "metadata": {
+        "id": "SEEOQ9lfVtjn"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from pyspark.sql.functions import *\n",
+        "in_df.select(col(\"latitude\")).show(2)"
+      ],
+      "metadata": {
+        "id": "PxkyIhi9Vzdv"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.select(in_df.latitude).show(1)"
+      ],
+      "metadata": {
+        "id": "csc_-DNvV-3t"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.select(in_df[\"latitude\"]).show(1)"
+      ],
+      "metadata": {
+        "id": "vwuHVGCDWE_f"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df1 = in_df.withColumn(\"latitude_status\",when(col(\"latitude\")>35,\"Above\").when(col(\"latitude\")==35,\"its AVG\").otherwise(\"Below\"))"
+      ],
+      "metadata": {
+        "id": "BMKPLAZGWKt8"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df.printSchema()"
+      ],
+      "metadata": {
+        "id": "uStub0X0WhKK"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "\n",
+        "in_df1.printSchema()"
+      ],
+      "metadata": {
+        "id": "nY_1dSGmWrKC"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df1.filter(col(\"latitude_status\")=='Above').count()"
+      ],
+      "metadata": {
+        "id": "oQYB3T4HWtcP"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df1.filter(col(\"latitude_status\")=='Below').count()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "kQNm7XLgW72A",
+        "outputId": "17a39b32-121f-4eee-9b8f-cb44854ddb69"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "9338"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 66
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df1.filter(col(\"latitude_status\")==\"its AVG\").count()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "jEhoxLElW-fl",
+        "outputId": "7b205252-5529-4580-a6a0-e21b99aa9641"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "1"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 67
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "in_df1.filter(col(\"latitude_status\")==\"its AVG\").show()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "4zkUpSMLBSbf",
+        "outputId": "60f6e8e0-8d00-44ee-c4cf-11fd142d4849"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "+---------+--------+------------------+-----------+--------------+----------+----------+-------------+------------------+---------------+\n",
+            "|longitude|latitude|housing_median_age|total_rooms|total_bedrooms|population|households|median_income|median_house_value|latitude_status|\n",
+            "+---------+--------+------------------+-----------+--------------+----------+----------+-------------+------------------+---------------+\n",
+            "|  -120.58|    35.0|              37.0|      523.0|         119.0|     374.0|      95.0|       1.4726|          106300.0|        its AVG|\n",
+            "+---------+--------+------------------+-----------+--------------+----------+----------+-------------+------------------+---------------+\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "bKU-k5fSBV-0"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
